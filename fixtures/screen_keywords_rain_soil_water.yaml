@@ -1,0 +1,48 @@
+# Test config: Include(rain, soil, water), Exclude(cows, forests)
+
+columns:
+  id: id
+  title: title
+  abstract: abstract
+  full_text: full_text
+
+research_question: |
+  Screen records for relevance to rain, soil, and/or water-related environmental themes,
+  while flagging work focused on cows (livestock) or forests as out of scope.
+
+eligibility_text: |
+  Eligibility (include | exclude | unclear):
+
+  Include:
+  - The study substantively engages with rain, soil, and/or water as described in the research question.
+  - Materials may still qualify via keyword overlap when the topic clearly matches (use keyword hints below).
+
+  Exclude:
+  - The work is primarily about cows/livestock or forests/timber as the main subject.
+
+  Unclear:
+  - Title and abstract (stage 1) do not provide enough information to decide.
+
+inclusion_keywords:
+  - rain
+  - soil
+  - water
+
+exclusion_keywords:
+  - cows
+  - forests
+
+llm:
+  provider: openai
+  api_base: "https://api.openai.com/v1"
+  model: "gpt-4o-mini"
+  api_key_env: "OPENAI_API_KEY"
+  temperature: 0.0
+  max_output_tokens: 1200
+
+stage2_policy: include_and_unclear
+
+chunking:
+  max_chars_single_pass: 100000
+  chunk_size: 28000
+  chunk_overlap: 400

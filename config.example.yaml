@@ -1,0 +1,74 @@
+# Copy to config.yaml and edit. Load with: two-stage-screen --config config.yaml ...
+# Launchers (after pip install -e .): full CLI `tss`, keyword UI `csv-screen`, or ./screen.cmd from repo root.
+#
+# PubMed/PMC CSV exports (e.g. PMID, Title, PMCID) do not include abstract/full text.
+# Enrich first, then screen (default columns below match enriched output):
+#   two-stage-screen enrich-pubmed --input pubmed_export.csv --csv-out enriched.csv
+#   two-stage-screen run --config config.yaml --input enriched.csv --csv-out out.csv --jsonl-out audit.jsonl
+# Or skip rubric YAML and pass keywords only:
+#   two-stage-screen screen --input enriched.csv --include "rain,soil,water" --exclude "cows,forests" --csv-out out.csv --jsonl-out audit.jsonl
+# Optional: set NCBI_API_KEY for higher NCBI efetch rate limits.
+#
+# API keys (reusable patterns):
+# - Copy `.env.example` to `.env` in this repo (`.env` is gitignored). The CLI loads it
+#   automatically (nearest file walking up from cwd). Use llm.api_key_env for the LLM
+#   variable name (default OPENAI_API_KEY). NCBI: optional NCBI_API_KEY.
+# - Or pass per run without exporting in the shell:
+#     --openai-api-key ...   on stage1 | stage2 | run
+#     --ncbi-api-key ...     on enrich-pubmed (overrides --api-key-env)
+
+columns:
+  id: id
+  title: title
+  abstract: abstract
+  full_text: full_text
+
+research_question: |
+  How are artificial intelligence tools being utilized by health science librarians in their workflows?
+
+eligibility_text: |
+  Eligibility criteria (apply exactly; use include / exclude / unclear):
+
+  Include:
+  - Empirical or descriptive work conducted in health science libraries (or consumer health, medical, or hospital libraries) where an AI tool is used to impact real library work processes.
+  - Any geographical location.
+  - Peer-reviewed primary research; review articles may be mined for references separately (this screener classifies primary reports only).
+
+  Exclude:
+  - Articles focused on librarians teaching about AI or AI tools (pedagogy about AI as the main topic).
+  - General academic or other libraries without a health focus.
+  - Articles discussing only potential or theoretical applications without actual use or evaluation.
+  - Not in English.
+  - Conference abstracts, review/overview articles editorials, opinion pieces.
+
+inclusion_keywords:
+  - artificial intelligence
+  - machine learning
+  - LLM
+  - chatbot
+  - health sciences library
+  - medical library
+  - hospital library
+
+exclusion_keywords:
+  - syllabus
+  - classroom
+  - theoretical framework only
+  - future directions only
+
+llm:
+  provider: openai
+  api_base: "https://api.openai.com/v1"
+  model: "gpt-4o-mini"
+  api_key_env: "OPENAI_API_KEY"
+  temperature: 0.0
+  max_output_tokens: 1200
+
+# Cost-aware default for stage2: only rows with stage1 include or unclear
+stage2_policy: include_and_unclear
+# Alternative: include_only | all
+
+chunking:
+  max_chars_single_pass: 100000
+  chunk_size: 28000
+  chunk_overlap: 400

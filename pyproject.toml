@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "two-stage-screen"
+version = "0.1.0"
+description = "Two-stage LLM-assisted eligibility screening from CSV"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27.0",
+    "pydantic>=2.5.0",
+    "PyYAML>=6.0.1",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+two-stage-screen = "two_stage_screen.cli:main"
+csv-screen = "two_stage_screen.cli:launch_screen"
+tss = "two_stage_screen.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
